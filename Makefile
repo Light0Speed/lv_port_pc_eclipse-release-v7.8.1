@@ -1,17 +1,29 @@
 #
 # Makefile
 #
-CC ?= gcc
+ifeq ($(origin CC), default)
+CC := gcc
+endif
 LVGL_DIR_NAME ?= lvgl
 LVGL_DIR ?= ${shell pwd}
 
-WARNINGS ?= -Werror -Wall -Wextra \
-						-Wshadow -Wundef -Wmaybe-uninitialized -Wmissing-prototypes -Wno-discarded-qualifiers \
+COMMON_WARNINGS ?= -Werror -Wall -Wextra \
+						-Wshadow -Wundef -Wmissing-prototypes \
 						-Wno-unused-function -Wno-error=strict-prototypes -Wpointer-arith -fno-strict-aliasing -Wno-error=cpp -Wuninitialized \
 						-Wno-unused-parameter -Wno-missing-field-initializers -Wno-format-nonliteral -Wno-cast-qual -Wunreachable-code -Wno-switch-default  \
-					  -Wreturn-type -Wmultichar -Wformat-security -Wno-ignored-qualifiers -Wno-error=pedantic -Wno-sign-compare -Wno-error=missing-prototypes -Wdouble-promotion -Wclobbered -Wdeprecated  \
-						-Wempty-body -Wshift-negative-value -Wstack-usage=2048 \
+					  -Wreturn-type -Wmultichar -Wformat-security -Wno-ignored-qualifiers -Wno-error=pedantic -Wno-sign-compare -Wno-error=missing-prototypes -Wdouble-promotion -Wdeprecated  \
+						-Wempty-body -Wshift-negative-value \
             -Wtype-limits -Wsizeof-pointer-memaccess -Wpointer-arith
+
+GCC_WARNINGS ?= -Wmaybe-uninitialized -Wno-discarded-qualifiers -Wclobbered -Wstack-usage=2048 -Wno-error=maybe-uninitialized -Wno-error=cast-function-type
+
+CLANG_WARNINGS ?=
+
+ifeq ($(findstring clang,$(shell $(CC) --version 2>/dev/null)),clang)
+WARNINGS ?= $(COMMON_WARNINGS) $(CLANG_WARNINGS)
+else
+WARNINGS ?= $(COMMON_WARNINGS) $(GCC_WARNINGS)
+endif
             
 CFLAGS ?= -O3 -g0 -I$(LVGL_DIR)/ $(WARNINGS)
 LDFLAGS ?= -lSDL2 -lm

@@ -29,8 +29,18 @@ You can download SDL from https://www.libsdl.org/
 
 On on Linux you can install it via terminal:
 ```
-sudo apt-get update && sudo apt-get install -y build-essential libsdl2-dev
+sudo apt-get update && sudo apt-get install -y build-essential gcc libsdl2-dev xvfb
 ```
+
+### Linux and cloud quick start
+For a command-line setup on Linux (including headless cloud environments), use the helper scripts in this repository:
+
+```
+./scripts/setup-dev.sh
+./scripts/run-headless-demo.sh 8
+```
+
+`setup-dev.sh` installs the required Ubuntu packages when `apt-get` is available and builds the `demo` binary. `run-headless-demo.sh` starts the SDL demo under `xvfb-run`, which is useful when no desktop session is attached.
 
 ### Install Eclipse CDT
 Download and install Eclipse CDT from  http://www.eclipse.org/cdt/
@@ -40,6 +50,13 @@ Download and install Eclipse CDT from  http://www.eclipse.org/cdt/
 2. Click **File->Import** and choose **General->Existing project into Workspace**
 3. Browse the root directory of the project and click Finish
 4. Build your project and run it
+
+### Build from the command line
+If you already have the dependencies installed, you can also build the simulator directly:
+
+```
+make -j"$(nproc)"
+```
 
 ## Docker
 1. Build the docker container

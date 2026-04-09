@@ -24,8 +24,9 @@ static void kb_create(void)
 
 }
 
-static void ta_event_cb(lv_obj_t * ta, lv_event_t e)
+static void ta_event_cb(lv_obj_t * textarea, lv_event_t e)
 {
+    (void)textarea;
     if(e == LV_EVENT_CLICKED && kb == NULL) {
         kb_create();
     }
