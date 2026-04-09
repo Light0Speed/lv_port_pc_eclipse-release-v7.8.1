@@ -98,5 +98,6 @@ void huge_list_demo_create(lv_obj_t * parent)
     lv_obj_t * page = huge_list_page_get_obj(huge_list);
     lv_obj_set_size(page, LV_HOR_RES_MAX - 24, LV_VER_RES_MAX - 24);
     lv_obj_align(page, NULL, LV_ALIGN_CENTER, 0, 0);
+    huge_list_page_refresh(huge_list);
     huge_list_page_scroll_to(huge_list, 0, LV_ANIM_OFF);
 }

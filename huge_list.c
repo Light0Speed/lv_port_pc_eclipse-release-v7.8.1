@@ -197,6 +197,12 @@ static void huge_list_page_queue_render(huge_list_page_t *list, int start_idx, i
         return;
     }
 
+    if(list->rendering != 0 &&
+       list->pending_start == start_idx &&
+       list->pending_end == end_idx) {
+        return;
+    }
+
     huge_list_page_clear_items(list);
 
     list->pending_start = start_idx;
@@ -207,6 +213,7 @@ static void huge_list_page_queue_render(huge_list_page_t *list, int start_idx, i
     if(list->render_task != NULL) {
         lv_task_set_prio(list->render_task, LV_TASK_PRIO_LOW);
         lv_task_ready(list->render_task);
+        huge_list_page_render_task_cb(list->render_task);
     }
 }
 
