@@ -72,28 +72,38 @@ static void huge_list_page_clear_items(huge_list_page_t *list)
 static lv_obj_t *huge_list_page_create_item(huge_list_page_t *list, int index)
 {
     lv_obj_t *btn;
+    lv_obj_t *icon;
     lv_obj_t *label;
     lv_obj_t *sub_label;
     char text_buf[HUGE_LIST_PAGE_TEXT_BUF_SIZE];
     int len;
     char *newline;
     int text_x = 12;
+    lv_color_t btn_bg = (index % 2 == 0) ? lv_color_hex(0x3b82f6) : lv_color_hex(0x2563eb);
 
     btn = lv_btn_create(list->scrollable, NULL);
     if(btn == NULL) return NULL;
 
-    lv_obj_set_size(btn, lv_obj_get_width(list->page), list->item_height);
-    lv_obj_set_pos(btn, 0, index * list->item_height);
+    lv_obj_set_size(btn, lv_obj_get_width(list->page) - 12, list->item_height - 6);
+    lv_obj_set_pos(btn, 6, index * list->item_height + 3);
     lv_obj_set_event_cb(btn, huge_list_page_item_event_cb);
+    lv_obj_set_style_local_bg_opa(btn, LV_BTN_PART_MAIN, LV_STATE_DEFAULT, LV_OPA_COVER);
+    lv_obj_set_style_local_bg_color(btn, LV_BTN_PART_MAIN, LV_STATE_DEFAULT, btn_bg);
+    lv_obj_set_style_local_bg_color(btn, LV_BTN_PART_MAIN, LV_STATE_PRESSED, lv_color_darken(btn_bg, LV_OPA_20));
+    lv_obj_set_style_local_border_width(btn, LV_BTN_PART_MAIN, LV_STATE_DEFAULT, 0);
+    lv_obj_set_style_local_radius(btn, LV_BTN_PART_MAIN, LV_STATE_DEFAULT, 8);
+    lv_obj_set_style_local_pad_left(btn, LV_BTN_PART_MAIN, LV_STATE_DEFAULT, 10);
+    lv_obj_set_style_local_pad_right(btn, LV_BTN_PART_MAIN, LV_STATE_DEFAULT, 10);
 
     lv_obj_set_user_data(btn, (void *)(uintptr_t)(index + 1));
 
     if(list->ds->get_icon != NULL) {
         const void *icon_src = list->ds->get_icon(index);
         if(icon_src != NULL) {
-            lv_obj_t *icon = lv_label_create(btn, NULL);
+            icon = lv_label_create(btn, NULL);
             lv_label_set_text(icon, icon_src);
             lv_obj_align(icon, NULL, LV_ALIGN_IN_LEFT_MID, 12, 0);
+            lv_obj_set_style_local_text_color(icon, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, lv_color_hex(0xfff3b0));
             text_x = 36;
         }
     }
@@ -110,15 +120,17 @@ static lv_obj_t *huge_list_page_create_item(huge_list_page_t *list, int index)
         label = lv_label_create(btn, NULL);
         lv_label_set_text(label, text_buf);
         lv_obj_set_pos(label, text_x, 8);
+        lv_obj_set_style_local_text_color(label, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, lv_color_hex(0xffffff));
 
         sub_label = lv_label_create(btn, NULL);
         lv_label_set_text(sub_label, newline + 1);
         lv_obj_set_pos(sub_label, text_x, 30);
-        lv_obj_set_style_local_text_color(sub_label, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, LV_COLOR_GRAY);
+        lv_obj_set_style_local_text_color(sub_label, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, lv_color_hex(0xdbeafe));
     } else {
         label = lv_label_create(btn, NULL);
         lv_label_set_text(label, text_buf);
         lv_obj_align(label, NULL, LV_ALIGN_IN_LEFT_MID, text_x, 0);
+        lv_obj_set_style_local_text_color(label, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, lv_color_hex(0xffffff));
     }
 
     return btn;
@@ -214,6 +226,8 @@ static void huge_list_page_queue_render(huge_list_page_t *list, int start_idx, i
         lv_task_set_prio(list->render_task, LV_TASK_PRIO_LOW);
         lv_task_ready(list->render_task);
         huge_list_page_render_task_cb(list->render_task);
+        lv_obj_invalidate(list->page);
+        lv_refr_now(NULL);
     }
 }
 
@@ -274,10 +288,17 @@ huge_list_page_t *huge_list_page_create(lv_obj_t *parent,
     lv_page_set_scrollbar_mode(list->page, LV_SCROLLBAR_MODE_AUTO);
     lv_page_set_scrl_layout(list->page, LV_LAYOUT_OFF);
     lv_page_set_scrollable_fit2(list->page, LV_FIT_NONE, LV_FIT_NONE);
+    lv_obj_set_style_local_bg_opa(list->page, LV_PAGE_PART_BG, LV_STATE_DEFAULT, LV_OPA_COVER);
+    lv_obj_set_style_local_bg_color(list->page, LV_PAGE_PART_BG, LV_STATE_DEFAULT, lv_color_hex(0xf2f5f8));
+    lv_obj_set_style_local_border_width(list->page, LV_PAGE_PART_BG, LV_STATE_DEFAULT, 1);
+    lv_obj_set_style_local_border_color(list->page, LV_PAGE_PART_BG, LV_STATE_DEFAULT, lv_color_hex(0xb8c4cf));
+    lv_obj_set_style_local_radius(list->page, LV_PAGE_PART_BG, LV_STATE_DEFAULT, 10);
 
     list->scrollable = lv_page_get_scrollable(list->page);
     lv_obj_set_width(list->scrollable, lv_obj_get_width(list->page));
     lv_obj_set_height(list->scrollable, list->total_count * list->item_height);
+    lv_obj_set_style_local_bg_opa(list->scrollable, LV_CONT_PART_MAIN, LV_STATE_DEFAULT, LV_OPA_TRANSP);
+    lv_obj_set_style_local_border_width(list->scrollable, LV_CONT_PART_MAIN, LV_STATE_DEFAULT, 0);
 
     list->render_task = lv_task_create(huge_list_page_render_task_cb, 20, LV_TASK_PRIO_OFF, list);
     if(list->render_task == NULL) {

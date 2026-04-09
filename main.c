@@ -15,6 +15,7 @@
                             issue*/
 #include <SDL2/SDL.h>
 #include "lvgl/lvgl.h"
+#include "lvgl/src/lv_core/lv_refr.h"
 #include "lv_drivers/display/monitor.h"
 #include "lv_drivers/indev/mouse.h"
 #include "huge_list_demo.h"
@@ -59,11 +60,24 @@ int main(int argc, char **argv)
   hal_init();
 
   huge_list_demo_create(lv_scr_act());
+  lv_refr_now(NULL);
+
+  const char *snapshot_path = getenv("LVGL_SNAPSHOT_BMP");
+  int snapshot_saved = 0;
+  int loop_count = 0;
 
   while (1) {
     /* Periodically call the lv_task handler.
      * It could be done in a timer interrupt or an OS task too.*/
     lv_task_handler();
+    if (!snapshot_saved && snapshot_path != NULL && snapshot_path[0] != '\0') {
+      loop_count++;
+      if (loop_count >= 200) {
+        int rc = monitor_snapshot_to_bmp(snapshot_path);
+        printf("snapshot_main_loop path=%s rc=%d\n", snapshot_path, rc);
+        snapshot_saved = 1;
+      }
+    }
     usleep(5 * 1000);
   }
 

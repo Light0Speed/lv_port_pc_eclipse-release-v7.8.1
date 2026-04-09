@@ -89,6 +89,27 @@ void huge_list_demo_create(lv_obj_t * parent)
     }
 
     lv_obj_clean(parent);
+    lv_obj_set_style_local_bg_opa(parent, LV_OBJ_PART_MAIN, LV_STATE_DEFAULT, LV_OPA_COVER);
+    lv_obj_set_style_local_bg_color(parent, LV_OBJ_PART_MAIN, LV_STATE_DEFAULT, lv_color_hex(0xe2e8f0));
+
+    lv_obj_t * header = lv_obj_create(parent, NULL);
+    lv_obj_set_size(header, LV_HOR_RES_MAX - 24, 48);
+    lv_obj_align(header, NULL, LV_ALIGN_IN_TOP_MID, 0, 10);
+    lv_obj_set_style_local_bg_opa(header, LV_OBJ_PART_MAIN, LV_STATE_DEFAULT, LV_OPA_COVER);
+    lv_obj_set_style_local_bg_color(header, LV_OBJ_PART_MAIN, LV_STATE_DEFAULT, lv_color_hex(0x0f172a));
+    lv_obj_set_style_local_border_width(header, LV_OBJ_PART_MAIN, LV_STATE_DEFAULT, 0);
+    lv_obj_set_style_local_radius(header, LV_OBJ_PART_MAIN, LV_STATE_DEFAULT, 10);
+
+    lv_obj_t * title = lv_label_create(header, NULL);
+    lv_label_set_text(title, "Huge List Demo");
+    lv_obj_align(title, NULL, LV_ALIGN_IN_TOP_LEFT, 14, 6);
+    lv_obj_set_style_local_text_color(title, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, lv_color_hex(0xffffff));
+    lv_obj_set_style_local_text_font(title, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, lv_theme_get_font_title());
+
+    lv_obj_t * subtitle = lv_label_create(header, NULL);
+    lv_label_set_text(subtitle, "2000 items / page + batch render");
+    lv_obj_align(subtitle, NULL, LV_ALIGN_IN_BOTTOM_LEFT, 14, -6);
+    lv_obj_set_style_local_text_color(subtitle, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, lv_color_hex(0xcbd5e1));
 
     huge_list = huge_list_page_create(parent, &ds, 56);
     if(huge_list == NULL) {
@@ -96,8 +117,8 @@ void huge_list_demo_create(lv_obj_t * parent)
     }
 
     lv_obj_t * page = huge_list_page_get_obj(huge_list);
-    lv_obj_set_size(page, LV_HOR_RES_MAX - 24, LV_VER_RES_MAX - 24);
-    lv_obj_align(page, NULL, LV_ALIGN_CENTER, 0, 0);
+    lv_obj_set_size(page, LV_HOR_RES_MAX - 24, LV_VER_RES_MAX - 70);
+    lv_obj_align(page, NULL, LV_ALIGN_IN_BOTTOM_MID, 0, -10);
     huge_list_page_refresh(huge_list);
     huge_list_page_scroll_to(huge_list, 0, LV_ANIM_OFF);
 }

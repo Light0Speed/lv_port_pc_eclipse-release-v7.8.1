@@ -158,6 +158,32 @@ void monitor_flush(lv_disp_drv_t * disp_drv, const lv_area_t * area, lv_color_t 
 #endif
 }
 
+int monitor_snapshot_to_bmp(const char * path)
+{
+    SDL_Surface * surface;
+    int result;
+
+    if(path == NULL || monitor.renderer == NULL) {
+        fprintf(stderr, "monitor_snapshot_to_bmp skipped: path=%p renderer=%p\n",
+                (const void *)path, (void *)monitor.renderer);
+        return -1;
+    }
+
+    surface = SDL_CreateRGBSurfaceWithFormat(0, MONITOR_HOR_RES, MONITOR_VER_RES, 32, SDL_PIXELFORMAT_ARGB8888);
+    if(surface == NULL) {
+        return -1;
+    }
+
+    result = SDL_RenderReadPixels(monitor.renderer, NULL, SDL_PIXELFORMAT_ARGB8888, surface->pixels, surface->pitch);
+    if(result == 0) {
+        result = SDL_SaveBMP(surface, path);
+    }
+
+    fprintf(stderr, "monitor_snapshot_to_bmp(%s) -> %d\n", path, result);
+    SDL_FreeSurface(surface);
+    return result;
+}
+
 
 #if MONITOR_DUAL
 
