@@ -38,6 +38,8 @@ include $(LVGL_DIR)/lv_drivers/lv_drivers.mk
 include $(LVGL_DIR)/lv_examples/lv_examples.mk
 
 CSRCS +=$(LVGL_DIR)/mouse_cursor_icon.c
+CSRCS +=$(LVGL_DIR)/huge_list.c
+CSRCS +=$(LVGL_DIR)/huge_list_demo.c
 
 OBJEXT ?= .o
 
